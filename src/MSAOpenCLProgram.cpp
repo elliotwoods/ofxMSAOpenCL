@@ -56,7 +56,12 @@ namespace msa {
 		
 		pOpenCL = OpenCL::currentOpenCL;
 		
-		clProgram = clCreateProgramWithSource(pOpenCL->getContext(), 1, (const char**)&source, NULL, &err);
+		size_t lengths[1];
+		lengths[0] = source.length();
+
+		const char * sourceString = source.c_str();
+
+		clProgram = clCreateProgramWithSource(pOpenCL->getContext(), 1, &sourceString, lengths, &err);
 		
 		build();
 	} 

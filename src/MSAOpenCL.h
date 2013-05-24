@@ -153,7 +153,8 @@ namespace msa {
 		
 		
 	protected:	
-		
+
+		cl_platform_id					clPlatform;
 		cl_device_id					clDevice;
 		cl_context						clContext;
 		cl_command_queue				clQueue;

@@ -76,23 +76,11 @@ namespace msa {
 		cl_context_properties properties[] = { CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup, 0 };
 #elif defined(TARGET_WIN32)
 		//--
-		//get opencl platform
-		//
-		cl_uint num_platforms; 
-	    cl_platform_id* clPlatformIDs;
-		cl_platform_id clSelectedPlatformID;
-		clGetPlatformIDs (0, NULL, &num_platforms);
-		clGetPlatformIDs (num_platforms, clPlatformIDs, NULL);
-		clSelectedPlatformID = clPlatformIDs[0];
-		//
-		//--
-
-		//--
 		//get opencl devices
 		//
 		cl_uint uiDevCount = 1;
 		cl_device_id cdDevices[1];
-		clGetDeviceIDs(clSelectedPlatformID, CL_DEVICE_TYPE_GPU, uiDevCount, cdDevices, NULL);
+		clGetDeviceIDs(clPlatform, CL_DEVICE_TYPE_GPU, uiDevCount, cdDevices, NULL);
 		//
 		//--
 
@@ -100,7 +88,7 @@ namespace msa {
         {
 			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(), 
 			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(), 
-			CL_CONTEXT_PLATFORM, (cl_context_properties)clSelectedPlatformID, 
+			CL_CONTEXT_PLATFORM, (cl_context_properties)clPlatform, 
 			0
 		};
 		cl_int ciErrNum;
@@ -232,8 +220,19 @@ namespace msa {
 	int OpenCL::createDevice(int clDeviceType, int numDevices) {
 		cl_int err;
 		cl_uint numDevicesFound;
-		
-		err = clGetDeviceIDs(NULL, clDeviceType, numDevices, &clDevice, &numDevicesFound);
+		//--
+		//get opencl platform
+		//
+		cl_uint num_platforms; 
+		clGetPlatformIDs (0, NULL, &num_platforms);
+		cl_platform_id* clPlatformIDs = new cl_platform_id[num_platforms];
+		clGetPlatformIDs (num_platforms, clPlatformIDs, NULL);
+		clPlatform = clPlatformIDs[0];
+		delete [] clPlatformIDs;
+		//
+		//--
+
+		err = clGetDeviceIDs(clPlatform, clDeviceType, numDevices, &clDevice, &numDevicesFound);
 		if(err != CL_SUCCESS) {
 			ofLog(OF_LOG_ERROR, "Error creating clDevice.");
 			assert(false);
