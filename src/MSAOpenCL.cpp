@@ -1,7 +1,7 @@
 #include "MSAOpenCL.h"
 #include "MSAOpenCLProgram.h"
 #include "MSAOpenCLKernel.h"
-#include "OpenGL/OpenGL.h"
+#include <gl/GL.h>
 
 namespace msa {
 	
@@ -74,8 +74,39 @@ namespace msa {
 		CGLContextObj kCGLContext = CGLGetCurrentContext();
 		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 		cl_context_properties properties[] = { CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup, 0 };
+#elif defined(TARGET_WIN32)
+		//--
+		//get opencl platform
+		//
+		cl_uint num_platforms; 
+	    cl_platform_id* clPlatformIDs;
+		cl_platform_id clSelectedPlatformID;
+		clGetPlatformIDs (0, NULL, &num_platforms);
+		clGetPlatformIDs (num_platforms, clPlatformIDs, NULL);
+		clSelectedPlatformID = clPlatformIDs[0];
+		//
+		//--
+
+		//--
+		//get opencl devices
+		//
+		cl_uint uiDevCount = 1;
+		cl_device_id cdDevices[1];
+		clGetDeviceIDs(clSelectedPlatformID, CL_DEVICE_TYPE_GPU, uiDevCount, cdDevices, NULL);
+		//
+		//--
+
+		cl_context_properties properties[] = 
+        {
+			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(), 
+			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(), 
+			CL_CONTEXT_PLATFORM, (cl_context_properties)clSelectedPlatformID, 
+			0
+		};
+		cl_int ciErrNum;
+		cl_context cxGPUContext = clCreateContext(properties, 1, &cdDevices[0], NULL, NULL, &ciErrNum);
 #else
-		ofLog(OF_LOG_ERROR, "OpenCL::setupFromOpenGL() only implemented for mac osx at the moment.\nIf you know how to do this for windows/linux please go ahead and implement it here.");
+		ofLog(OF_LOG_ERROR, "OpenCL::setupFromOpenGL() only implemented for mac osx and windows at the moment.\nIf you know how to do this for linux please go ahead and implement it here.");
 		assert(false);
 #endif
 		

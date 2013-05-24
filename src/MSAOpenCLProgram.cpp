@@ -1,6 +1,8 @@
 #include "MSAOpenCL.h"
 #include "MSAOpenCLProgram.h"
 #include "MSAOpenCLKernel.h"
+#include <assert.h>
+#include <array>
 
 namespace msa { 
 	
@@ -89,7 +91,7 @@ namespace msa {
 			return;
 		}
 		
-		size_t binaries_sizes[program_num_devices];
+		size_t * binaries_sizes = new size_t[program_num_devices];
 		
 		err = clGetProgramInfo(clProgram, CL_PROGRAM_BINARY_SIZES, program_num_devices*sizeof(size_t), binaries_sizes, NULL);
 		assert(err = CL_SUCCESS);
@@ -112,6 +114,7 @@ namespace msa {
 			delete [] binaries[i];
 		
 		delete [] binaries;
+		delete [] binaries_sizes;
 	}
 	
 	

@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include <OpenCL/Opencl.h>
+#include <CL/Opencl.h>
 
 namespace msa { 
 	class OpenCL;

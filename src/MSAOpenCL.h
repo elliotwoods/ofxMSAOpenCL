@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include <OpenCL/Opencl.h>
+#include <CL/Opencl.h>
 #include "MSAOpenCLKernel.h"
 #include "MSAOpenCLProgram.h"
 #include "MSAOpenCLBuffer.h"

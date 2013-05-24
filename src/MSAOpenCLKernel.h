@@ -10,9 +10,9 @@
 #pragma once
 
 #include "ofMain.h"
-#include <OpenCL/Opencl.h>
+#include <CL/Opencl.h>
 #include "MSAOpenCLMemoryObject.h"
-
+#include <assert.h>
 
 namespace msa { 
 	class OpenCL;
